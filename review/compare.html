@@ -52,7 +52,7 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
     <div class="controls">
       <label>Stránka <select id="page"></select></label>
       <div><span id="l-lbl" style="font-size:.875rem;font-weight:600;display:block;margin-bottom:4px">Vlevo</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><div class="seg" id="lchips" role="group" aria-label="Rychlý výběr levé verze"></div><select id="left" aria-labelledby="l-lbl"></select></div></div>
+        <select id="left" aria-labelledby="l-lbl"></select></div>
       <label>Vpravo <select id="right"></select></label>
       <div><span id="w-lbl" style="font-size:.875rem;font-weight:600;display:block;margin-bottom:4px">Šířka</span>
         <div class="seg" role="group" aria-labelledby="w-lbl">
@@ -94,14 +94,10 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
     $('lt').textContent = label(versions.filter(function (v) { return v.id === l; })[0]);
     $('rt').textContent = label(versions.filter(function (v) { return v.id === r; })[0]);
     layout();
-    chips();
     saveHash();
   }
   function saveHash() {
     if (ready) history.replaceState(null, '', '#page=' + encodeURIComponent($('page').value) + '&left=' + $('left').value + '&right=' + $('right').value + '&w=' + width);
-  }
-  function chips() {
-    document.querySelectorAll('#lchips button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === $('left').value); });
   }
   function fromHash() {
     var h = {};
@@ -158,12 +154,6 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
       opts($('right'), vs, pick(h.right, versions[n - 1].id));
       var pages = res[1];
       opts($('page'), pages.map(function (p) { return { value: p, text: p === 'index.html' ? 'index (úvodní stránka)' : p }; }), pages.indexOf(h.page) >= 0 ? h.page : 'index.html');
-      var lc = $('lchips');
-      versions.forEach(function (v) {
-        var b = document.createElement('button'); b.type = 'button'; b.dataset.v = v.id; b.textContent = v.id;
-        b.addEventListener('click', function () { $('left').value = v.id; load(); });
-        lc.appendChild(b);
-      });
       if (h.w === '390' || h.w === '1440') setWidth(+h.w);
       ready = true;
       load();
