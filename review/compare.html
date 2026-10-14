@@ -104,7 +104,7 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
         var max = a.scrollHeight - a.clientHeight;
         busy = true;
         to.contentWindow.scrollTo(0, max > 0 ? (w.scrollY / max) * (b.scrollHeight - b.clientHeight) : 0);
-        requestAnimationFrame(function () { busy = false; });
+        setTimeout(function () { busy = false; }, 80); // ne rAF: ve skrytém panelu/záložce se nespouští
       }, { passive: true });
     } catch (e) { /* ignoruj */ }
   }
