@@ -69,7 +69,7 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var versions = [], width = 1440, busy = false;
+  var versions = [], width = 1440;
   var li = $('li'), ri = $('ri');
 
   function opts(sel, list, val) {
@@ -95,16 +95,17 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
     layout();
   }
   // Scroll sync: poměrem posunu, stránky verzí mají jinou výšku. Same-origin, takže jde.
+  var lock = new WeakMap(); // iframe -> do kdy ignorovat jeho scroll (vyvolali jsme ho sami)
   function hook(from, to) {
     try {
       var w = from.contentWindow;
       w.addEventListener('scroll', function () {
-        if (!$('sync').checked || busy) return;
+        if (!$('sync').checked || Date.now() < (lock.get(from) || 0)) return;
         var a = w.document.documentElement, b = to.contentWindow.document.documentElement;
         var max = a.scrollHeight - a.clientHeight;
-        busy = true;
-        to.contentWindow.scrollTo(0, max > 0 ? (w.scrollY / max) * (b.scrollHeight - b.clientHeight) : 0);
-        setTimeout(function () { busy = false; }, 80); // ne rAF: ve skrytém panelu/záložce se nespouští
+        lock.set(to, Date.now() + 150);
+        // behavior instant: stránky mají scroll-behavior smooth, animace by se přetahovala se zdrojem
+        to.contentWindow.scrollTo({ top: max > 0 ? (w.scrollY / max) * (b.scrollHeight - b.clientHeight) : 0, behavior: 'instant' });
       }, { passive: true });
     } catch (e) { /* ignoruj */ }
   }
