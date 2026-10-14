@@ -237,7 +237,7 @@
       v: target, duration: 1.8, ease: 'power2.out',
       scrollTrigger: { trigger: el, start: 'top 90%', once: true },
       onStart: function () { el.textContent = '0' + suffix; },
-      onUpdate: function () { el.textContent = Math.round(state.v) + suffix; }
+      onUpdate: function () { el.textContent = Math.round(state.v).toLocaleString('cs-CZ') + suffix; }
     });
   });
 })();

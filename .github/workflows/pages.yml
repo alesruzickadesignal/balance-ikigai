@@ -1,4 +1,4 @@
-name: Náhled (GitHub Pages + review overlay)
+name: Náhled (GitHub Pages, verze + review overlay)
 on:
   push:
     branches: [main]
@@ -18,15 +18,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Sestavit _site s review overlayem
-        run: |
-          mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='_reference-webflow' \
-            --exclude='review/worker' --exclude='_site' ./ _site/
-          for f in _site/*.html; do
-            sed -i 's#</body>#<script src="review/review.js" defer></script></body>#' "$f"
-            sed -i 's#<head>#<head><meta name="robots" content="noindex">#' "$f"
-          done
+        with:
+          fetch-depth: 0
+      - name: Sestavit _site (verze z tagů preview-v*)
+        run: bash review/build-preview.sh _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

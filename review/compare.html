@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Balance IKIGAI – verze náhledu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap">
+<style>
+:root { --ink:#261f5a; --bg:#f5f5fc; --line:#d9d8ee; --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:400 1rem/1.5 var(--font); }
+a { color:var(--ink); }
+:focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
+header, main { max-width:1500px; margin:0 auto; padding:0 16px; }
+header { padding-top:24px; }
+h1 { font-size:clamp(1.5rem,4vw,2.25rem); line-height:1.15; margin:0 0 4px; font-weight:800; }
+h2 { font-size:1.125rem; margin:0 0 8px; }
+.sub { margin:0 0 20px; opacity:.75; }
+.versions { list-style:none; margin:0 0 24px; padding:0; display:grid; gap:10px; }
+.versions li { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; }
+.versions .meta { flex:1 1 220px; font-size:.875rem; opacity:.75; }
+.btn { display:inline-flex; align-items:center; min-height:44px; padding:10px 20px; border:0; border-radius:999px; cursor:pointer;
+  background:linear-gradient(90deg,#ec9d1c 0%,#ffdb7d 100%); color:var(--ink); font:700 1rem/1.2 var(--font); text-decoration:none; }
+.btn:hover { filter:brightness(1.07); }
+.controls { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:end; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:16px; }
+.controls label { display:grid; gap:4px; font-size:.875rem; font-weight:600; }
+.controls label.chk { display:flex; align-items:center; gap:8px; min-height:44px; }
+select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); font:inherit; }
+.seg { display:flex; gap:6px; }
+.seg button { min-height:44px; padding:0 16px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); font:600 .9375rem var(--font); cursor:pointer; }
+.seg button[aria-pressed="true"] { background:var(--ink); color:#fff; border-color:var(--ink); }
+.cmp { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding-bottom:32px; }
+.pane h3 { margin:0 0 6px; font-size:.9375rem; }
+.frame { position:relative; width:100%; height:78vh; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:10px; }
+.frame iframe { position:absolute; top:0; left:0; border:0; transform-origin:0 0; background:#fff; }
+@media (max-width:700px) { .cmp { grid-template-columns:1fr; } .frame { height:70vh; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Balance IKIGAI – verze náhledu</h1>
+  <p class="sub">Interní náhled, nejde o produkční web.</p>
+</header>
+<main>
+  <section aria-labelledby="h-ver">
+    <h2 id="h-ver">Verze</h2>
+    <ul class="versions" id="versions"><li>Načítám…</li></ul>
+  </section>
+  <section aria-labelledby="h-cmp">
+    <h2 id="h-cmp">Porovnání vedle sebe</h2>
+    <div class="controls">
+      <label>Stránka <select id="page"></select></label>
+      <label>Vlevo <select id="left"></select></label>
+      <label>Vpravo <select id="right"></select></label>
+      <div><span id="w-lbl" style="font-size:.875rem;font-weight:600;display:block;margin-bottom:4px">Šířka</span>
+        <div class="seg" role="group" aria-labelledby="w-lbl">
+          <button type="button" data-w="1440" aria-pressed="true">Desktop 1440</button>
+          <button type="button" data-w="390" aria-pressed="false">Mobil 390</button>
+        </div></div>
+      <label class="chk"><input type="checkbox" id="sync" checked> Synchronizovaný scroll</label>
+    </div>
+    <div class="cmp">
+      <div class="pane"><h3 id="lt"></h3><div class="frame" id="lf"><iframe id="li" title="Levá verze" loading="lazy"></iframe></div></div>
+      <div class="pane"><h3 id="rt"></h3><div class="frame" id="rf"><iframe id="ri" title="Pravá verze" loading="lazy"></iframe></div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var versions = [], width = 1440, busy = false;
+  var li = $('li'), ri = $('ri');
+
+  function opts(sel, list, val) {
+    sel.innerHTML = '';
+    list.forEach(function (v) { var o = document.createElement('option'); o.value = v.value; o.textContent = v.text; sel.appendChild(o); });
+    if (val) sel.value = val;
+  }
+  function label(v) { return v.id + ' – ' + v.label; }
+
+  function layout() {
+    [['lf', li], ['rf', ri]].forEach(function (p) {
+      var box = $(p[0]), f = p[1], s = Math.min(1, box.clientWidth / width);
+      f.style.width = width + 'px';
+      f.style.height = (box.clientHeight / s) + 'px';
+      f.style.transform = 'scale(' + s + ')';
+    });
+  }
+  function load() {
+    var pg = $('page').value, l = $('left').value, r = $('right').value;
+    li.src = l + '/' + pg; ri.src = r + '/' + pg;
+    $('lt').textContent = label(versions.filter(function (v) { return v.id === l; })[0]);
+    $('rt').textContent = label(versions.filter(function (v) { return v.id === r; })[0]);
+    layout();
+  }
+  // Scroll sync: poměrem posunu, stránky verzí mají jinou výšku. Same-origin, takže jde.
+  function hook(from, to) {
+    try {
+      var w = from.contentWindow;
+      w.addEventListener('scroll', function () {
+        if (!$('sync').checked || busy) return;
+        var a = w.document.documentElement, b = to.contentWindow.document.documentElement;
+        var max = a.scrollHeight - a.clientHeight;
+        busy = true;
+        to.contentWindow.scrollTo(0, max > 0 ? (w.scrollY / max) * (b.scrollHeight - b.clientHeight) : 0);
+        requestAnimationFrame(function () { busy = false; });
+      }, { passive: true });
+    } catch (e) { /* ignoruj */ }
+  }
+  li.addEventListener('load', function () { hook(li, ri); });
+  ri.addEventListener('load', function () { hook(ri, li); });
+
+  document.querySelectorAll('.seg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      width = +b.dataset.w;
+      document.querySelectorAll('.seg button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      layout();
+    });
+  });
+  ['page', 'left', 'right'].forEach(function (id) { $(id).addEventListener('change', load); });
+  window.addEventListener('resize', layout);
+
+  Promise.all([fetch('versions.json').then(function (r) { return r.json(); }), fetch('pages.json').then(function (r) { return r.json(); })])
+    .then(function (res) {
+      versions = res[0];
+      var ul = $('versions'); ul.innerHTML = '';
+      versions.forEach(function (v) {
+        var li_ = document.createElement('li');
+        li_.innerHTML = '<a class="btn" href="' + v.id + '/">Otevřít ' + v.id + '</a><strong>' + v.id + ' – ' + v.label +
+          '</strong><span class="meta">' + (v.date || '') + ' · ' + (v.commit || '') + '</span>';
+        ul.appendChild(li_);
+      });
+      var vs = versions.map(function (v) { return { value: v.id, text: label(v) }; });
+      opts($('left'), vs, versions[0].id);
+      opts($('right'), vs, versions[versions.length - 1].id);
+      opts($('page'), res[1].map(function (p) { return { value: p, text: p === 'index.html' ? 'index (úvodní stránka)' : p }; }), 'index.html');
+      load();
+    })
+    .catch(function () { $('versions').innerHTML = '<li>Nepodařilo se načíst seznam verzí.</li>'; });
+})();
+</script>
+</body>
+</html>

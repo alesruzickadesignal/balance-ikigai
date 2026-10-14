@@ -51,7 +51,7 @@ body {
 }
 img, svg, video { display: block; max-width: 100%; }
 img { height: auto; }
-h1, h2, h3, h4 { margin: 0; line-height: 1.1; letter-spacing: -0.025em; font-weight: 800; text-wrap: balance; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.18; letter-spacing: -0.012em; font-weight: 800; text-wrap: balance; }
 p { margin: 0; text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; }
 a { color: var(--c-violet); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
@@ -111,14 +111,14 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
   min-height: 48px; padding: 12px 22px;
   border: 0; border-radius: 999px; cursor: pointer;
-  /* Gradient světlá → sytá žlutá; hover posune pozadí do tmavší půlky. */
-  background: var(--c-yellow) linear-gradient(180deg, #ffdb7d 0%, var(--c-yellow) 50%, #ec9d1c 100%) 0 0 / 100% 200%;
+  /* Vodorovný gradient tmavší → světlá žlutá, bez spodní linky; hover jen zesvětlí. */
+  background: linear-gradient(90deg, #ec9d1c 0%, #ffdb7d 100%);
   color: var(--c-ink);
   font-weight: 700; font-size: 1rem; line-height: 1.2; text-decoration: none; white-space: nowrap;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -2px 0 rgb(38 31 90 / 0.1), 0 8px 18px -10px rgb(236 157 28 / 0.75);
-  transition: background-position .35s var(--ease), box-shadow .35s var(--ease), transform .2s var(--ease);
+  box-shadow: 0 8px 18px -10px rgb(236 157 28 / 0.75);
+  transition: filter .25s var(--ease), box-shadow .35s var(--ease), transform .2s var(--ease);
 }
-.btn:hover { background-position: 0 100%; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45), inset 0 -2px 0 rgb(38 31 90 / 0.12), 0 12px 24px -10px rgb(236 157 28 / 0.9); --arrow-x: 4px; }
+.btn:hover { filter: brightness(1.07) saturate(1.05); box-shadow: 0 12px 24px -10px rgb(236 157 28 / 0.9); --arrow-x: 4px; }
 .btn:active { transform: translateY(1px); }
 .btn svg { width: 20px; height: 20px; flex: none; }
 .btn .i-arrow { transform: translateX(var(--arrow-x)); transition: transform .2s var(--ease); }
@@ -205,7 +205,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .hero-copy { display: grid; gap: 28px; align-content: center; }
 .hero-title {
   font-size: clamp(2.5rem, 6.4vw, 5.25rem);
-  line-height: 1.02; letter-spacing: -0.04em;
+  line-height: 1.14; letter-spacing: -0.015em;
 }
 .hero-title .mark { white-space: nowrap; }
 .perks { display: flex; flex-wrap: wrap; gap: 10px 22px; list-style: none; font-weight: 600; }
@@ -225,11 +225,10 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   background: var(--c-lavender-soft);
   box-shadow: 0 40px 80px -40px rgb(88 72 152 / 0.45);
 }
-/* Video je 16:9 maketa webu – ořízneme na postavu vpravo a schováme horní i spodní lištu makety.
-   Až klient dodá finální video, stačí height: 100%; top: 0; object-position: center. */
+/* Video 9:16 v oblouku 4:5: ořez shora/zdola, hlava i notebook zůstávají v záběru. */
 .arch video {
-  position: absolute; left: 0; top: -15%; width: 100%; height: 130%;
-  object-fit: cover; object-position: 97% 50%;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 40%;
 }
 .video-toggle {
   position: absolute; z-index: 2; right: 16px; bottom: 16px;
@@ -263,12 +262,6 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   padding: clamp(24px, 3vw, 36px); border-radius: var(--r-l);
   background: var(--c-ink); color: var(--c-white);
   position: relative; overflow: hidden; isolation: isolate;
-}
-.picker-car::after {
-  content: ""; position: absolute; z-index: -1; right: -90px; bottom: -110px;
-  width: 280px; height: 280px; border-radius: 50%;
-  border: 1.5px solid rgb(206 188 251 / 0.35);
-  box-shadow: -70px -40px 0 -1px var(--c-ink), -70px -40px 0 0 rgb(206 188 251 / 0.25);
 }
 .picker-car .picker-head { display: flex; align-items: center; gap: 12px; }
 .picker-car .picker-head .icon { width: 44px; height: 44px; padding: 10px; border-radius: 50%; background: var(--c-yellow); color: var(--c-ink); }
@@ -372,17 +365,9 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .about { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
 .about-media { position: relative; }
 .about-photo {
-  aspect-ratio: 1000 / 980; width: 100%; object-fit: cover;
-  border-radius: var(--r-l) var(--r-l) var(--r-l) 999px;
+  aspect-ratio: 1000 / 1277; width: 100%; object-fit: cover; object-position: 50% 30%;
+  border-radius: var(--r-l);
 }
-.about-since {
-  position: absolute; right: -12px; top: 24px;
-  display: grid; place-items: center; text-align: center; width: 132px; height: 132px; border-radius: 50%;
-  background: var(--c-yellow); color: var(--c-ink); line-height: 1.1; transform: rotate(-8deg);
-  box-shadow: var(--shadow);
-}
-.about-since small { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.about-since strong { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
 .about-copy { display: grid; gap: 22px; }
 .about-copy > p { color: var(--c-muted); font-size: 1.125rem; }
 .insia { display: flex; align-items: center; gap: 14px; font-weight: 600; color: var(--c-muted); font-size: 0.95rem; }
@@ -395,16 +380,16 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* ---------- Co mám za sebou + Proč ---------- */
 .why { background: var(--c-white); border-block: 1px solid var(--c-line); }
-.stats-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: end; padding-bottom: clamp(48px, 6vw, 80px); border-bottom: 1px solid var(--c-line); margin-bottom: clamp(48px, 6vw, 80px); }
+.stats-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: end; margin-bottom: clamp(48px, 6vw, 80px); }
 .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; list-style: none; }
-.stat { display: grid; gap: 6px; }
+.stat { display: grid; gap: 6px; padding: clamp(20px, 2.5vw, 32px); border-radius: var(--r-m); background: var(--c-lavender-soft); }
 .stat-num {
-  font-size: clamp(3.25rem, 8vw, 6.5rem); font-weight: 800; letter-spacing: -0.05em; line-height: 0.9;
+  font-size: clamp(2.75rem, 5vw, 4.5rem); white-space: nowrap; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
   color: var(--c-violet); font-variant-numeric: tabular-nums;
 }
 .stat-label { font-weight: 600; color: var(--c-muted); font-size: 1.0625rem; }
 .reasons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 40px); list-style: none; counter-reset: r; }
-.reason { display: grid; gap: 14px; align-content: start; padding-top: 24px; border-top: 2px solid var(--c-ink); counter-increment: r; }
+.reason { display: grid; gap: 14px; align-content: start; padding: clamp(24px, 2.5vw, 32px); border-radius: var(--r-m); background: var(--c-lavender-soft); counter-increment: r; }
 .reason::before { content: counter(r, decimal-leading-zero); font-weight: 800; color: var(--c-violet); font-size: 0.95rem; letter-spacing: 0.08em; }
 .reason p { color: var(--c-muted); }
 
@@ -413,11 +398,9 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   position: relative; overflow: hidden; isolation: isolate;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px;
   padding: clamp(36px, 6vw, 80px); border-radius: var(--r-l);
-  background: var(--c-lavender);
+  background: var(--c-ink);
 }
-.cta h2 { font-size: clamp(2rem, 4.6vw, 3.6rem); max-width: 16ch; }
-.cta .ikigai { inset: -40% -8% auto auto; width: min(520px, 70%); stroke: rgb(119 52 193 / 0.35); z-index: -1; }
-.cta .ikigai circle:first-child { fill: rgb(255 255 255 / 0.35); }
+.cta h2 { font-size: clamp(2rem, 4.6vw, 3.6rem); max-width: 16ch; color: var(--c-white); }
 
 /* ---------- Jak to funguje ---------- */
 .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 40px); list-style: none; position: relative; }
@@ -428,11 +411,9 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .step { position: relative; z-index: 1; display: grid; gap: 14px; align-content: start; }
 .step-num {
   display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
-  background: var(--c-ink); color: var(--c-white); font-weight: 800; font-size: 1.25rem;
+  background: #9466e3; color: var(--c-white); font-weight: 800; font-size: 1.25rem; /* bílá na #9466e3 = 4:1 */
   box-shadow: 0 0 0 8px var(--c-bg);
 }
-.step:nth-child(2) .step-num { background: var(--c-violet); }
-.step:nth-child(3) .step-num { background: var(--c-yellow); color: var(--c-ink); }
 .step p { color: var(--c-muted); }
 
 /* ---------- FAQ ---------- */
@@ -455,7 +436,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* ---------- Pojďme na to ---------- */
 .final .section-head { margin-bottom: 32px; }
-.final .contact-band { margin-top: 16px; }
+.final .contact-band { margin-top: clamp(48px, 6vw, 88px); }
 
 /* ---------- Patička ---------- */
 .site-footer { background: var(--c-white); border-top: 1px solid var(--c-line); padding-top: clamp(48px, 6vw, 72px); font-size: 0.95rem; }
@@ -476,7 +457,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .page { padding-block: clamp(32px, 5vw, 72px) var(--section); }
 .calc { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
 .calc-aside { display: grid; gap: 24px; position: sticky; top: calc(var(--header-h) + 32px); }
-.calc-aside h1 { font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: -0.04em; line-height: 1.02; }
+.calc-aside h1 { font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: -0.015em; line-height: 1.12; }
 .calc-aside .perks { flex-direction: column; gap: 12px; }
 .calc-help { display: grid; gap: 6px; padding: 20px 22px; border-radius: var(--r-m); background: var(--c-lavender-soft); }
 .calc-help a { font-weight: 800; font-size: 1.25rem; color: var(--c-ink); text-decoration: none; }
@@ -548,7 +529,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* ---------- Textové stránky (GDPR, cookies) ---------- */
 .prose { max-width: 760px; }
-.prose h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -0.035em; margin-bottom: 32px; }
+.prose h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -0.015em; margin-bottom: 32px; }
 .prose h2 { font-size: 1.4rem; margin: 40px 0 12px; letter-spacing: -0.015em; }
 .prose p, .prose ul { margin-bottom: 16px; color: #33374f; }
 .prose ul { padding-left: 1.25em; }
@@ -559,7 +540,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .notice { display: grid; justify-items: center; text-align: center; gap: 20px; max-width: 720px; margin-inline: auto; padding-block: clamp(24px, 5vw, 64px) clamp(48px, 6vw, 80px); }
 .notice-icon { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: var(--c-lavender); color: var(--c-ink); }
 .notice-icon svg { width: 40px; height: 40px; }
-.notice h1 { font-size: clamp(2.6rem, 7vw, 4.5rem); letter-spacing: -0.04em; }
+.notice h1 { font-size: clamp(2.6rem, 7vw, 4.5rem); letter-spacing: -0.015em; }
 .notice .lead { margin-inline: auto; }
 .notice-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; list-style: none; font-weight: 600; }
 
@@ -589,8 +570,6 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   .picker-card .icon { grid-row: span 3; align-self: start; }
   .hero-badge { left: 12px; bottom: 16px; }
   .ikigai { inset: -10% -24% auto auto; }
-  .about-since { width: 108px; height: 108px; right: 4px; }
-  .about-since strong { font-size: 1.6rem; }
   .fields, .fields.three, .option-cards { grid-template-columns: minmax(0, 1fr); }
   .form-foot .btn { justify-self: stretch; }
   .btn { white-space: normal; text-align: center; }

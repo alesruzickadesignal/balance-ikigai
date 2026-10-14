@@ -6,7 +6,10 @@
   if (window.__biReview) return;
   window.__biReview = true;
 
-  var PAGE = location.pathname.split('/').pop() || 'index.html';
+  // Klíč stránky = [verze/]soubor. Verzi předává workflow přes data-version (defer skripty mají currentScript).
+  // v1 má výjimku: klíč bez prefixu, aby zůstaly vidět komentáře grafika z doby před verzováním (page: "index.html").
+  var VER = (document.currentScript && document.currentScript.dataset.version) || '';
+  var PAGE = (VER && VER !== 'v1' ? VER + '/' : '') + (location.pathname.split('/').pop() || 'index.html');
   var comments = [];
   var mode = false;
   var showDone = false;
