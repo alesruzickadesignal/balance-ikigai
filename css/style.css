@@ -230,7 +230,10 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .hero-badge {
   position: absolute; z-index: 2; left: -28px; bottom: 36px;
   display: grid; gap: 2px; padding: 14px 18px; border-radius: var(--r-m);
-  background: var(--c-white); box-shadow: var(--shadow); max-width: 240px;
+  background: rgb(255 255 255 / 0.9); box-shadow: var(--shadow); max-width: 240px; text-align: center;
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .hero-badge { background: rgb(255 255 255 / 0.62); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 }
 .hero-badge strong { font-size: 1.05rem; }
 .hero-badge span { font-size: 0.875rem; color: var(--c-muted); line-height: 1.4; }
@@ -376,7 +379,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 }
 .stat-label { font-weight: 600; color: var(--c-muted); font-size: 1.0625rem; }
 .reasons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 40px); list-style: none; counter-reset: r; }
-.reason { display: grid; gap: 14px; align-content: start; padding: clamp(24px, 2.5vw, 32px); border-radius: var(--r-m); background: var(--c-lavender-soft); counter-increment: r; }
+.reason { display: grid; gap: 14px; align-content: start; padding: clamp(24px, 2.5vw, 32px); border-radius: var(--r-m); background: rgb(235 228 253 / 0.5); counter-increment: r; }
 .reason::before { content: counter(r, decimal-leading-zero); font-weight: 800; color: var(--c-violet); font-size: 0.95rem; letter-spacing: 0.08em; }
 .reason p { color: var(--c-muted); }
 
@@ -406,7 +409,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 /* ---------- FAQ ---------- */
 .faq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .faq-aside { display: grid; gap: 18px; position: sticky; top: calc(var(--header-h) + 32px); }
-.faq-contact { display: grid; gap: 4px; justify-items: start; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); }
+.faq-contact { display: grid; gap: 4px; justify-items: start; font-size: clamp(1.5rem, 2.1vw, 2.5rem); }
 .faq-contact a:first-child { white-space: nowrap; }
 .faq-list { display: grid; gap: 12px; }
 .faq-item { border-radius: var(--r-m); background: var(--c-white); border: 1px solid var(--c-line); }
@@ -513,6 +516,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .range-scale { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--c-muted); }
 
 .form-foot { display: grid; gap: 20px; }
+fieldset:has(> .check) + .form-foot { margin-top: -20px; }
 .form-foot .btn { justify-self: start; }
 .hp { display: none !important; }
 
