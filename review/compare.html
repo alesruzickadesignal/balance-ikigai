@@ -51,7 +51,8 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
     <h2 id="h-cmp">Porovnání vedle sebe</h2>
     <div class="controls">
       <label>Stránka <select id="page"></select></label>
-      <label>Vlevo <select id="left"></select></label>
+      <div><span id="l-lbl" style="font-size:.875rem;font-weight:600;display:block;margin-bottom:4px">Vlevo</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><div class="seg" id="lchips" role="group" aria-label="Rychlý výběr levé verze"></div><select id="left" aria-labelledby="l-lbl"></select></div></div>
       <label>Vpravo <select id="right"></select></label>
       <div><span id="w-lbl" style="font-size:.875rem;font-weight:600;display:block;margin-bottom:4px">Šířka</span>
         <div class="seg" role="group" aria-labelledby="w-lbl">
@@ -69,7 +70,7 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var versions = [], width = 1440;
+  var versions = [], width = 1440, ready = false;
   var li = $('li'), ri = $('ri');
 
   function opts(sel, list, val) {
@@ -93,6 +94,19 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
     $('lt').textContent = label(versions.filter(function (v) { return v.id === l; })[0]);
     $('rt').textContent = label(versions.filter(function (v) { return v.id === r; })[0]);
     layout();
+    chips();
+    saveHash();
+  }
+  function saveHash() {
+    if (ready) history.replaceState(null, '', '#page=' + encodeURIComponent($('page').value) + '&left=' + $('left').value + '&right=' + $('right').value + '&w=' + width);
+  }
+  function chips() {
+    document.querySelectorAll('#lchips button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === $('left').value); });
+  }
+  function fromHash() {
+    var h = {};
+    location.hash.slice(1).split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) h[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); });
+    return h;
   }
   // Scroll sync: poměrem posunu, stránky verzí mají jinou výšku. Same-origin, takže jde.
   var lock = new WeakMap(); // iframe -> do kdy ignorovat jeho scroll (vyvolali jsme ho sami)
@@ -112,11 +126,15 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
   li.addEventListener('load', function () { hook(li, ri); });
   ri.addEventListener('load', function () { hook(ri, li); });
 
-  document.querySelectorAll('.seg button').forEach(function (b) {
+  function setWidth(w) {
+    width = w;
+    document.querySelectorAll('.seg button[data-w]').forEach(function (x) { x.setAttribute('aria-pressed', +x.dataset.w === w); });
+  }
+  document.querySelectorAll('.seg button[data-w]').forEach(function (b) {
     b.addEventListener('click', function () {
-      width = +b.dataset.w;
-      document.querySelectorAll('.seg button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      setWidth(+b.dataset.w);
       layout();
+      saveHash();
     });
   });
   ['page', 'left', 'right'].forEach(function (id) { $(id).addEventListener('change', load); });
@@ -133,9 +151,21 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
         ul.appendChild(li_);
       });
       var vs = versions.map(function (v) { return { value: v.id, text: label(v) }; });
-      opts($('left'), vs, versions[0].id);
-      opts($('right'), vs, versions[versions.length - 1].id);
-      opts($('page'), res[1].map(function (p) { return { value: p, text: p === 'index.html' ? 'index (úvodní stránka)' : p }; }), 'index.html');
+      var ids = versions.map(function (v) { return v.id; }), h = fromHash(), n = versions.length;
+      var pick = function (v, d) { return ids.indexOf(v) >= 0 ? v : d; };
+      // Výchozí: vlevo předposlední verze, vpravo nejnovější.
+      opts($('left'), vs, pick(h.left, versions[Math.max(0, n - 2)].id));
+      opts($('right'), vs, pick(h.right, versions[n - 1].id));
+      var pages = res[1];
+      opts($('page'), pages.map(function (p) { return { value: p, text: p === 'index.html' ? 'index (úvodní stránka)' : p }; }), pages.indexOf(h.page) >= 0 ? h.page : 'index.html');
+      var lc = $('lchips');
+      versions.forEach(function (v) {
+        var b = document.createElement('button'); b.type = 'button'; b.dataset.v = v.id; b.textContent = v.id;
+        b.addEventListener('click', function () { $('left').value = v.id; load(); });
+        lc.appendChild(b);
+      });
+      if (h.w === '390' || h.w === '1440') setWidth(+h.w);
+      ready = true;
       load();
     })
     .catch(function () { $('versions').innerHTML = '<li>Nepodařilo se načíst seznam verzí.</li>'; });
