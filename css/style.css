@@ -109,7 +109,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .btn {
   --arrow-x: 0;
   display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
-  min-height: 48px; padding: 12px 22px;
+  min-height: 48px; padding: 11.5px 22px 12.5px; /* o 0,5 px výš: Plus Jakarta má vyšší ascender, text jinak opticky padá */
   border: 0; border-radius: 999px; cursor: pointer;
   /* Vodorovný gradient tmavší → světlá žlutá, bez spodní linky; hover jen zesvětlí. */
   background: linear-gradient(90deg, #ec9d1c 0%, #ffdb7d 100%);
@@ -122,7 +122,9 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .btn:active { transform: translateY(1px); }
 .btn svg { width: 20px; height: 20px; flex: none; }
 .btn .i-arrow { transform: translateX(var(--arrow-x)); transition: transform .2s var(--ease); }
-.btn-lg { min-height: 56px; padding: 16px 28px; font-size: 1.0625rem; }
+.btn:has(> svg:last-child) { padding-inline: 26px 20px; } /* ikona vpravo opticky táhne střed doprava */
+.btn-lg { min-height: 56px; padding: 15.5px 28px 16.5px; font-size: 1.0625rem; }
+.btn-lg:has(> svg:last-child) { padding-inline: 32px 24px; }
 .btn-block { width: 100%; }
 
 .icon { width: 24px; height: 24px; flex: none; }
@@ -208,38 +210,23 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   line-height: 1.14; letter-spacing: -0.015em;
 }
 .hero-title .mark { white-space: nowrap; }
+.hero-copy .perks { margin-top: 20px; }
 .perks { display: flex; flex-wrap: wrap; gap: 10px 22px; list-style: none; font-weight: 600; }
 .perks li { display: inline-flex; align-items: center; gap: 8px; }
 .perks .icon { width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: var(--c-lavender); color: var(--c-ink); }
 
 .hero-media { position: relative; justify-self: end; width: min(100%, 460px); }
-.ikigai {
-  position: absolute; inset: -14% -18% auto auto; width: 118%; z-index: 0;
-  fill: none; stroke: var(--c-lavender); stroke-width: 1.5;
-  pointer-events: none;
-}
-.ikigai circle:first-child { fill: rgb(206 188 251 / 0.35); stroke: none; }
-.arch {
-  position: relative; z-index: 1; aspect-ratio: 4 / 5; overflow: hidden;
-  border-radius: 999px 999px var(--r-l) var(--r-l);
+.hero-video {
+  position: relative; aspect-ratio: 4 / 5; overflow: hidden;
+  border-radius: var(--r-l);
   background: var(--c-lavender-soft);
   box-shadow: 0 40px 80px -40px rgb(88 72 152 / 0.45);
 }
-/* Video 9:16 v oblouku 4:5: ořez shora/zdola, hlava i notebook zůstávají v záběru. */
-.arch video {
+/* Video 9:16 v obdélníku 4:5: ořez shora/zdola, hlava i notebook zůstávají v záběru. */
+.hero-video video {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: 50% 40%;
 }
-.video-toggle {
-  position: absolute; z-index: 2; right: 16px; bottom: 16px;
-  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
-  border: 0; cursor: pointer; background: rgb(255 255 255 / 0.9); color: var(--c-ink);
-  box-shadow: var(--shadow);
-}
-.video-toggle svg { width: 18px; height: 18px; }
-.video-toggle .i-play { display: none; }
-.video-toggle[aria-pressed="true"] .i-play { display: block; }
-.video-toggle[aria-pressed="true"] .i-pause { display: none; }
 .hero-badge {
   position: absolute; z-index: 2; left: -28px; bottom: 36px;
   display: grid; gap: 2px; padding: 14px 18px; border-radius: var(--r-m);
@@ -380,7 +367,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* ---------- Co mám za sebou + Proč ---------- */
 .why { background: var(--c-white); border-block: 1px solid var(--c-line); }
-.stats-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: end; margin-bottom: clamp(48px, 6vw, 80px); }
+.stats-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 40px; align-items: center; margin-bottom: clamp(48px, 6vw, 80px); }
 .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; list-style: none; }
 .stat { display: grid; gap: 6px; padding: clamp(20px, 2.5vw, 32px); border-radius: var(--r-m); background: var(--c-lavender-soft); }
 .stat-num {
@@ -411,7 +398,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .step { position: relative; z-index: 1; display: grid; gap: 14px; align-content: start; }
 .step-num {
   display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
-  background: #9466e3; color: var(--c-white); font-weight: 800; font-size: 1.25rem; /* bílá na #9466e3 = 4:1 */
+  background: var(--c-lavender-soft); color: var(--c-violet); font-weight: 800; font-size: 1.25rem;
   box-shadow: 0 0 0 8px var(--c-bg);
 }
 .step p { color: var(--c-muted); }
@@ -419,6 +406,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 /* ---------- FAQ ---------- */
 .faq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .faq-aside { display: grid; gap: 18px; position: sticky; top: calc(var(--header-h) + 32px); }
+.faq-contact { display: grid; gap: 4px; justify-items: start; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); }
+.faq-contact a:first-child { white-space: nowrap; }
 .faq-list { display: grid; gap: 12px; }
 .faq-item { border-radius: var(--r-m); background: var(--c-white); border: 1px solid var(--c-line); }
 .faq-item summary {
@@ -569,7 +558,6 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   .picker-card { grid-template-columns: 44px 1fr; grid-template-rows: auto; align-items: center; gap: 4px 14px; padding: 18px; }
   .picker-card .icon { grid-row: span 3; align-self: start; }
   .hero-badge { left: 12px; bottom: 16px; }
-  .ikigai { inset: -10% -24% auto auto; }
   .fields, .fields.three, .option-cards { grid-template-columns: minmax(0, 1fr); }
   .form-foot .btn { justify-self: stretch; }
   .btn { white-space: normal; text-align: center; }
@@ -587,5 +575,4 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   .marquee-track { animation: none; width: auto; justify-content: center; }
   .marquee ul { flex-wrap: wrap; justify-content: center; padding-right: 0; row-gap: 32px; }
   .marquee ul[aria-hidden="true"] { display: none; }
-  .video-toggle { display: none; }
 }

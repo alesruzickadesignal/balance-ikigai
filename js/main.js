@@ -71,23 +71,12 @@
   /* ---------- Hero video: při reduced-motion jen poster ---------- */
   var video = document.querySelector('[data-hero-video]');
   if (video) {
-    var vToggle = document.querySelector('.video-toggle');
-    if (reduced) {
-      if (vToggle) vToggle.hidden = true;
-    } else {
+    if (!reduced) {
       // Zdroj nastavujeme až tady, aby se při reduced-motion video vůbec nestahovalo.
       video.querySelectorAll('source[data-src]').forEach(function (s) { s.src = s.dataset.src; });
       video.load();
       var p = video.play();
       if (p && p.catch) p.catch(function () { /* autoplay zablokován – zůstane poster */ });
-      if (vToggle) {
-        vToggle.addEventListener('click', function () {
-          var paused = vToggle.getAttribute('aria-pressed') === 'true';
-          if (paused) video.play(); else video.pause();
-          vToggle.setAttribute('aria-pressed', String(!paused));
-          vToggle.setAttribute('aria-label', paused ? 'Pozastavit video' : 'Přehrát video');
-        });
-      }
     }
   }
 
