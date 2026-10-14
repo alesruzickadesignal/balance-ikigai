@@ -136,7 +136,7 @@ select { min-height:44px; padding:0 12px; border:1px solid var(--line); border-r
   ['page', 'left', 'right'].forEach(function (id) { $(id).addEventListener('change', load); });
   window.addEventListener('resize', layout);
 
-  Promise.all([fetch('versions.json').then(function (r) { return r.json(); }), fetch('pages.json').then(function (r) { return r.json(); })])
+  Promise.all([fetch('versions.json', { cache: 'no-store' }).then(function (r) { return r.json(); }), fetch('pages.json', { cache: 'no-store' }).then(function (r) { return r.json(); })])
     .then(function (res) {
       versions = res[0];
       var ul = $('versions'); ul.innerHTML = '';
