@@ -127,6 +127,20 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .btn-lg:has(> svg:last-child) { padding-inline: 32px 24px; }
 .btn-block { width: 100%; }
 
+/* Zelená tečka „online“ u všech odkazů na online schůzku (vzor z wealthstrategy.cz, navíc jemně pulzuje) */
+.online-dot {
+  display: inline-block; flex: none; width: 10px; height: 10px; margin-right: 0.55em; vertical-align: 0.05em;
+  border-radius: 50%; background: #3ee21b;
+  box-shadow: 0 0 0 3px rgb(62 226 27 / 0.22), 0 0 12px 3px rgb(62 226 27 / 0.45);
+  animation: online-glow 2.4s ease-in-out infinite;
+}
+.btn .online-dot { margin-right: 0; }
+.icon-online { display: inline-grid; place-items: center; }
+.icon-online .online-dot { margin: 0; }
+@keyframes online-glow {
+  50% { box-shadow: 0 0 0 5px rgb(62 226 27 / 0.12), 0 0 16px 5px rgb(62 226 27 / 0.3); }
+}
+
 .icon { width: 24px; height: 24px; flex: none; }
 
 /* ---------- Hlavička ---------- */
