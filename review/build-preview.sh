@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Sestaví náhled s verzemi do složky $1 (výchozí _site). Spouští se z kořene repa (workflow i lokálně).
 # Verze = anotované tagy preview-v*. Overlay a rozcestník se berou z main (REVIEW_JS / COMPARE_HTML přepíšou, pro lokální test).
+# Kořen = nejnovější verze čistě pro klienta (bez overlaye), porovnání verzí je na porovnani.html.
 set -euo pipefail
 OUT="${1:-_site}"
 MAIN_REF="${MAIN_REF:-origin/main}"
 rm -rf "$OUT"; mkdir -p "$OUT/review"
 
 if [ -n "${REVIEW_JS:-}" ]; then cp "$REVIEW_JS" "$OUT/review/review.js"; else git show "$MAIN_REF:review/review.js" > "$OUT/review/review.js"; fi
-if [ -n "${COMPARE_HTML:-}" ]; then cp "$COMPARE_HTML" "$OUT/index.html"; else git show "$MAIN_REF:review/compare.html" > "$OUT/index.html"; fi
+if [ -n "${COMPARE_HTML:-}" ]; then cp "$COMPARE_HTML" "$OUT/porovnani.html"; else git show "$MAIN_REF:review/compare.html" > "$OUT/porovnani.html"; fi
 
 TAGS=$(git tag -l 'preview-v*' --sort=version:refname)
 [ -n "$TAGS" ] || { echo "Žádný tag preview-v*" >&2; exit 1; }
@@ -32,13 +33,12 @@ json.dump([dict(zip(('id', 'label', 'date', 'commit'), r)) for r in rows], open(
 pages = sorted(f for f in os.listdir(f'{out}/{latest}') if f.endswith('.html'))
 pages.sort(key=lambda p: p != 'index.html')
 json.dump(pages, open(f'{out}/pages.json', 'w'))
-# Staré odkazy na kořenové podstránky -> nejnovější verze (index.html je rozcestník, 404.html zůstává GitHub 404)
-for p in pages:
-    if p in ('index.html', '404.html'): continue
-    t = f'{latest}/{p}'
-    open(f'{out}/{p}', 'w').write(f'<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="robots" content="noindex">'
-        f'<meta http-equiv="refresh" content="0; url={t}"><title>Přesměrování</title>'
-        f'<script>location.replace("{t}"+location.search+location.hash)</script></head>'
-        f'<body><p><a href="{t}">Pokračovat na {t}</a></p></body></html>')
 PY
 rm "$OUT/versions.tsv"
+
+# Kořen: nejnovější verze bez komentovacího overlaye (odkaz pro klienta), jen noindex.
+git archive "preview-$latest" | tar -x -C "$OUT" --exclude='.github' --exclude='review' --exclude='_reference-webflow' --exclude='netlify.toml'
+for f in "$OUT"/*.html; do
+  [ "$f" = "$OUT/porovnani.html" ] && continue
+  perl -pi -e 's#<head>#<head><meta name="robots" content="noindex">#' "$f"
+done

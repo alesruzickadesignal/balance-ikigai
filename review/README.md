@@ -5,11 +5,11 @@ Grafik komentuje přímo na náhledu webu; komentáře jdou do Cloudflare Worker
 ## Jak to funguje
 - `review/review.js` – overlay (Shadow DOM, bez knihoven). Tlačítko „Komentovat“ vpravo dole nebo **Alt+C**; klik na prvek, text, Cmd/Ctrl+Enter uloží, Esc zruší. Při prvním komentáři se zeptá na jméno.
 - `review/worker/` – Worker `balance-ikigai-review` (`wrangler deploy`), API `GET/POST /comments`, `PATCH /comments/:id`, `DELETE /comments/:id` (jen s `Authorization: Bearer <ADMIN_TOKEN>`).
-- `.github/workflows/pages.yml` + `review/build-preview.sh` – při push na `main` (nebo ručně) sestaví `_site/` z tagů `preview-v*`: každá verze do `vN/` (bez `review/`, `.github`, `_reference-webflow`), do každého `*.html` vloží `<script src="../review/review.js" data-version="vN" defer>` a `noindex`; `review.js` a rozcestník `review/compare.html` (→ `_site/index.html`) bere z `main`. Nasadí na GitHub Pages.
+- `.github/workflows/pages.yml` + `review/build-preview.sh` – při push na `main` (nebo ručně) sestaví `_site/` z tagů `preview-v*`: každá verze do `vN/` (bez `review/`, `.github`, `_reference-webflow`), do každého `*.html` vloží `<script src="../review/review.js" data-version="vN" defer>` a `noindex`; `review.js` a rozcestník `review/compare.html` (→ `_site/porovnani.html`) bere z `main`. Do kořene `_site/` dá nejnovější verzi bez overlaye (jen `noindex`) – to je odkaz pro klienta. Nasadí na GitHub Pages.
 - Skript není odkazovaný v žádném HTML v repu, takže `main` je čistý.
 
 ## Verze náhledu
-URL `https://alesruzickadesignal.github.io/balance-ikigai/` je rozcestník (seznam verzí + porovnání vedle sebe), verze jsou na `…/v1/`, `…/v2/`. Kořenové podstránky (`/autopojisteni.html`) přesměrují na nejnovější verzi.
+URL `https://alesruzickadesignal.github.io/balance-ikigai/` je nejnovější verze bez komentování (pro klienta). Rozcestník s porovnáním vedle sebe je na `…/porovnani.html`, jednotlivé verze s komentováním na `…/v1/`, `…/v2/`…
 
 Přidat v3:
 ```
