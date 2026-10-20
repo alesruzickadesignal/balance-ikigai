@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sestaví náhled s verzemi do složky $1 (výchozí _site). Spouští se z kořene repa (workflow i lokálně).
 # Verze = anotované tagy preview-v*. Overlay a rozcestník se berou z main (REVIEW_JS / COMPARE_HTML přepíšou, pro lokální test).
-# Kořen = nejnovější verze čistě pro klienta (bez overlaye), porovnání verzí je na porovnani.html.
+# Kořen = nejnovější verze pro klienta (overlay s klíčem nejnovější verze), porovnání verzí je na porovnani.html.
 set -euo pipefail
 OUT="${1:-_site}"
 MAIN_REF="${MAIN_REF:-origin/main}"
@@ -36,9 +36,10 @@ json.dump(pages, open(f'{out}/pages.json', 'w'))
 PY
 rm "$OUT/versions.tsv"
 
-# Kořen: nejnovější verze bez komentovacího overlaye (odkaz pro klienta), jen noindex.
+# Kořen: nejnovější verze (odkaz pro klienta). Overlay má data-version nejnovější verze,
+# takže komentáře z kořene se ukládají k ní a jsou vidět i na …/vN/.
 git archive "preview-$latest" | tar -x -C "$OUT" --exclude='.github' --exclude='review' --exclude='_reference-webflow' --exclude='netlify.toml'
 for f in "$OUT"/*.html; do
   [ "$f" = "$OUT/porovnani.html" ] && continue
-  perl -pi -e 's#<head>#<head><meta name="robots" content="noindex">#' "$f"
+  perl -pi -e 's#</body>#<script src="review/review.js" data-version="'"$latest"'" defer></script></body>#; s#<head>#<head><meta name="robots" content="noindex">#' "$f"
 done
