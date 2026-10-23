@@ -253,8 +253,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .hero-badge span { font-size: 0.875rem; color: var(--c-muted); line-height: 1.4; }
 
 /* ---------- Výběr pojištění (picker) ---------- */
-.picker-wrap { margin-top: clamp(48px, 6vw, 80px); }
-.picker-label { font-size: 1.25rem; letter-spacing: -0.01em; margin-bottom: 18px; }
+.picker-wrap { margin-top: clamp(64px, 8vw, 112px); }
+.picker-label { font-size: clamp(1.75rem, 3vw, 2.5rem); text-align: center; margin-bottom: clamp(28px, 3.5vw, 44px); }
 .picker {
   display: grid; gap: 16px;
   grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
