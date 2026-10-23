@@ -301,7 +301,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .picker-card .icon { width: 44px; height: 44px; padding: 10px; border-radius: 50%; background: var(--c-lavender-soft); color: var(--c-violet); }
 .picker-card h3 { font-size: 1.15rem; letter-spacing: -0.015em; line-height: 1.25; }
 .picker-card p { font-size: 0.875rem; color: var(--c-muted); line-height: 1.5; }
-.picker-go { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--c-violet); font-size: 0.95rem; }
+.picker-go { display: inline-flex; align-items: center; gap: 6px; justify-self: start; padding: 6px 12px; border-radius: 999px; font-weight: 700; color: var(--c-violet); background: var(--c-lavender-soft); font-size: 0.95rem; transition: background-color .2s var(--ease), color .2s var(--ease); }
+.picker-card:hover .picker-go, .picker-card:focus-within .picker-go { background: var(--c-violet); color: #fff; }
 .picker-go svg { width: 18px; height: 18px; transition: transform .2s var(--ease); }
 .picker-card:hover .picker-go svg { transform: translateX(4px); }
 .picker-card a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
